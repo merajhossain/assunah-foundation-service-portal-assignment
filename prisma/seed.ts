@@ -716,7 +716,7 @@ async function main() {
   console.log(`Seeded ${requests.length} service requests.`);
   console.log(`Seeded ${activities.length} service activities.`);
   console.log(`Default password for all seeded users: ${DEFAULT_PASSWORD}`);
-  console.log("User roles: 1 admin, 8 managers, 3 office, 6 requester.");
+  console.log("User roles: 1 admin, 9 managers, 3 office, 6 requester.");
 }
 
 main()

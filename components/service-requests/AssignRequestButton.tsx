@@ -52,9 +52,14 @@ export function AssignRequestButton({
     }
 
     let cancelled = false;
-    setLoading(true);
-    setLoadError(null);
-    setDetail(null);
+    // Defer state setters to the microtask queue to avoid synchronous setState in render phase
+    Promise.resolve().then(() => {
+      if (!cancelled) {
+        setLoading(true);
+        setLoadError(null);
+        setDetail(null);
+      }
+    });
 
     fetchServiceRequestDetail(publicId, { signal: abortable.nextSignal() })
       .then((data) => {

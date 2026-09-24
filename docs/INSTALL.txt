@@ -1,0 +1,100 @@
+ASSUNNAH FOUNDATION SERVICE PORTAL - QUICK INSTALL GUIDE
+========================================================
+
+REQUIREMENTS
+------------
+- Node.js 20 or newer   (check: node -v)
+- MySQL 8 or MariaDB 10.6+ running locally (XAMPP, WAMP, Laragon or MySQL Server)
+- Git
+
+
+1. DOWNLOAD THE PROJECT
+-----------------------
+git clone https://github.com/merajhossain/assunah-foundation-service-portal-assignment.git
+cd assunah-foundation-service-portal-assignment
+
+
+2. INSTALL PACKAGES
+-------------------
+npm install
+
+
+3. CREATE THE DATABASE
+----------------------
+Create an empty database. You can use ANY name you like.
+In this guide it is written as: your_database_name
+Replace it with your own name (for example: service_portal).
+
+Using phpMyAdmin / MySQL Workbench: create a new database with
+collation utf8mb4_unicode_ci.
+
+Or from the command line:
+
+mysql -u root -p -e "CREATE DATABASE your_database_name CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;"
+
+
+4. CONFIGURE ENVIRONMENT
+------------------------
+Copy the example file:
+
+Windows:     copy .env.example .env
+Mac/Linux:   cp .env.example .env
+
+Open .env and set:
+
+DATABASE_URL="mysql://root:YOUR_PASSWORD@127.0.0.1:3306/your_database_name"
+AUTH_SECRET="any-long-random-text"
+AUTH_TRUST_HOST="true"
+
+(Use the same database name you created in step 3.)
+(If MySQL has no password: mysql://root:@127.0.0.1:3306/your_database_name)
+(To generate AUTH_SECRET: npx auth secret)
+
+
+5. SET UP DATABASE TABLES AND SAMPLE DATA
+-----------------------------------------
+npx prisma migrate deploy
+npx prisma generate
+npm run db:seed
+
+The seed creates 19 demo users and 12,000 sample requests.
+It may take a minute or two.
+
+
+6. START THE APPLICATION
+------------------------
+npm run dev
+
+Open in browser:  http://localhost:3000
+
+For production mode instead:
+npm run build
+npm start
+
+
+LOGIN
+-----
+Password for all accounts:  Password123!
+
+Admin       admin@assunnah.local
+Manager     office.manager@assunnah.local
+Office      office.one@assunnah.local
+Requester   requester.one@assunnah.local
+
+Full list of accounts:  docs/CREDENTIALS.txt
+Full documentation:     README.md
+
+
+COMMON PROBLEMS
+---------------
+- "Database unreachable" message:
+  MySQL is not running, or DATABASE_URL in .env is wrong.
+
+- "Cannot find module generated/prisma":
+  Run: npx prisma generate
+
+- Port 3000 already in use:
+  Run: npm run dev -- -p 3001   then open http://localhost:3001
+
+- Forgot demo passwords / want fresh sample data:
+  Run: npm run db:seed
