@@ -1,0 +1,96 @@
+generator client {
+  provider = "prisma-client"
+  output   = "../generated/prisma"
+}
+
+datasource db {
+  provider = "mysql"
+}
+
+model Role {
+  id        Int      @id @default(autoincrement())
+  name      String   @unique @db.VarChar(50)
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+  users     User[]
+
+  @@map("roles")
+}
+
+model User {
+  id                Int               @id @default(autoincrement())
+  name              String            @db.VarChar(255)
+  email             String            @unique @db.VarChar(255)
+  passwordHash      String            @map("password_hash") @db.VarChar(255)
+  roleId            Int               @map("role_id")
+  role              Role              @relation(fields: [roleId], references: [id])
+  createdAt         DateTime          @default(now()) @map("created_at")
+  updatedAt         DateTime          @updatedAt @map("updated_at")
+  services          Service[]
+  requestedServices ServiceRequest[]  @relation("ServiceRequestRequester")
+  assignedServices  ServiceRequest[]  @relation("ServiceRequestAssignee")
+  activities        ServiceActivity[]
+
+  @@map("users")
+}
+
+model Service {
+  id          Int              @id @default(autoincrement())
+  name        String           @db.VarChar(255)
+  slug        String           @unique @db.VarChar(255)
+  description String?          @db.Text
+  category    String           @db.VarChar(100)
+  isActive    Boolean          @default(true) @map("is_active")
+  createdById Int              @map("created_by_id")
+  createdBy   User             @relation(fields: [createdById], references: [id])
+  createdAt   DateTime         @default(now()) @map("created_at")
+  requests    ServiceRequest[]
+
+  @@map("services")
+}
+
+model ServiceRequest {
+  id          Int               @id @default(autoincrement())
+  publicId    String            @unique @map("public_id") @db.VarChar(50)
+  subject     String            @db.VarChar(255)
+  description String            @db.Text
+  requesterId Int               @map("requester_id")
+  requester   User              @relation("ServiceRequestRequester", fields: [requesterId], references: [id])
+  serviceId   Int               @map("service_id")
+  service     Service           @relation(fields: [serviceId], references: [id])
+  category    String            @db.VarChar(100)
+  priority     String            @db.VarChar(50)
+  priorityRank Int               @default(2) @map("priority_rank") @db.TinyInt
+  status       String            @db.VarChar(50)
+  assigneeId   Int?              @map("assignee_id")
+  assignee     User?             @relation("ServiceRequestAssignee", fields: [assigneeId], references: [id])
+  createdAt    DateTime          @default(now()) @map("created_at")
+  updatedAt    DateTime          @updatedAt @map("updated_at")
+  resolvedAt   DateTime?         @map("resolved_at")
+  activities   ServiceActivity[]
+
+  @@index([requesterId, updatedAt])
+  @@index([assigneeId, updatedAt])
+  @@index([status, updatedAt])
+  @@index([category])
+  @@index([priorityRank, updatedAt])
+  @@index([updatedAt])
+  @@map("service_requests")
+}
+
+model ServiceActivity {
+  id        Int            @id @default(autoincrement())
+  requestId Int            @map("request_id")
+  request   ServiceRequest @relation(fields: [requestId], references: [id])
+  actorId   Int            @map("actor_id")
+  actor     User           @relation(fields: [actorId], references: [id])
+  action    String         @db.VarChar(100)
+  fromValue String?        @map("from_value") @db.VarChar(255)
+  toValue   String?        @map("to_value") @db.VarChar(255)
+  note      String?        @db.Text
+  createdAt DateTime       @default(now()) @map("created_at")
+
+  @@index([requestId, createdAt])
+  @@index([actorId, requestId])
+  @@map("service_activities")
+}

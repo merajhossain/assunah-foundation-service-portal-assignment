@@ -1,0 +1,49 @@
+@import "tailwindcss";
+
+@theme inline {
+  --font-sans: var(--font-source-sans), Helvetica, Arial, sans-serif;
+  --font-display: var(--font-fraunces), Georgia, serif;
+
+  --color-brand: #008346;
+  --color-brand-dark: #006b39;
+  --color-surface: #f5f5f5;
+  --color-ink: #1a1a1a;
+  --color-muted: #6b7280;
+}
+
+@layer base {
+  html,
+  body {
+    min-height: 100%;
+  }
+
+  body {
+    @apply bg-surface text-ink font-sans antialiased;
+  }
+
+  a {
+    color: inherit;
+  }
+
+  a,
+  button,
+  [role="button"],
+  summary,
+  select,
+  label[for],
+  input[type="submit"],
+  input[type="button"],
+  input[type="reset"],
+  input[type="checkbox"],
+  input[type="radio"],
+  input[type="file"] {
+    cursor: pointer;
+  }
+
+  button:disabled,
+  [aria-disabled="true"],
+  input:disabled,
+  select:disabled {
+    cursor: not-allowed;
+  }
+}
